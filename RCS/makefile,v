@@ -1,0 +1,48 @@
+head	1.1;
+access;
+symbols;
+locks
+	Doug:1.1; strict;
+comment	@# @;
+
+
+1.1
+date	2019.10.29.02.31.53;	author Doug;	state Exp;
+branches;
+next	;
+
+
+desc
+@Latest makefile
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@TARGET=chronometer.hex
+
+# Link minimal version of printf.
+CFLAGS=-mmcu=atmega48pa -Os -Wall -Wextra -std=c++11 -Wl,-u,vfprintf -lprintf_min
+#CFLAGS=-mmcu=atmega328p -Os -Wall -Wextra -std=c++11
+
+AVRDUDE=avrdude -p m48p -c usbasp-clone -B 8
+#AVRDUDE=avrdude -p m328p -c usbasp-clone -B 8
+ 
+all:	$(TARGET)
+ 
+upload:	$(TARGET)
+	$(AVRDUDE) -e -U flash:w:$(TARGET)
+ 
+test:
+	$(AVRDUDE) -n  -v
+ 
+%.elf:	%.c
+	avr-g++ $(CFLAGS) $< -o $@@
+ 
+%.hex:	%.elf
+	avr-objcopy -j .text -j .data -O ihex $< $@@
+
+@

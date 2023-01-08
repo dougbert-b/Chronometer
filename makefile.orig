@@ -1,0 +1,18 @@
+TARGET=clock.hex
+CFLAGS=-mmcu=atmega48 -Os -Wall -Wextra
+AVRDUDE=avrdude -p m48 -c usbasp -b 9600 -P /dev/ttyACM0
+ 
+all:	$(TARGET)
+ 
+upload:	$(TARGET)
+	$(AVRDUDE) -e -U flash:w:$(TARGET)
+ 
+test:
+	$(AVRDUDE) -n  -v
+ 
+%.elf:	%.c
+	avr-gcc $(CFLAGS) $< -o $@
+ 
+%.hex:	%.elf
+	avr-objcopy -j .text -j .data -O ihex $< $@
+
